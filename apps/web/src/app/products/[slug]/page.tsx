@@ -34,6 +34,12 @@ export default async function ProductDetailPage({ params }: Params) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
+  // NOTE: no `offers` block. Google's Product structured data requires a
+  // real numeric `price` whenever `offers` is present — this business runs
+  // on a "Call for Price" model with no fixed price, so including `offers`
+  // without one is invalid (and inventing a fake price would be misleading
+  // structured data, which Google explicitly disallows). The rest of the
+  // Product fields below don't require a price and remain fully valid.
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -42,15 +48,6 @@ export default async function ProductDetailPage({ params }: Params) {
     category: product.category,
     image: `${siteConfig.url}${product.image}`,
     brand: { '@type': 'Brand', name: siteConfig.name },
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'INR',
-      availability: product.inStock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      seller: { '@type': 'Organization', name: siteConfig.name },
-      url: `${siteConfig.url}/products/${product.slug}`,
-    },
   };
 
   return (

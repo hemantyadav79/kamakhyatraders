@@ -112,10 +112,11 @@ export function localBusinessJsonLd() {
       opens: '07:00',
       closes: '18:00',
     },
-    makesOffer: [
-      'Cement', 'Iron Rods', 'Stone Chips (Gitti)', 'Sand (Balu)',
-      'Bricks', 'Bamboo', 'Plywood',
-    ].map((name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Product', name } })),
+    // NOTE: deliberately no `makesOffer` here. Nesting bare { name } objects
+    // typed as schema.org Product (no image/price) made Google's Product
+    // rich-result validator flag them as "invalid items" — each product
+    // already has its own correctly-typed Product markup on its detail page
+    // (see productJsonLd below), which is the right place for this data.
   };
 }
 
