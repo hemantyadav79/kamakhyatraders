@@ -34,6 +34,13 @@ const usesFromString = z
           .filter(Boolean),
   );
 
+const reviewSchema = z.object({
+  author: z.string().trim().min(1, 'Reviewer name is required').max(80),
+  rating: z.coerce.number().int().min(1).max(5),
+  comment: z.string().trim().max(1000).optional().or(z.literal('')),
+  date: z.string().trim().max(20).optional().or(z.literal('')),
+});
+
 export const productSchema = z.object({
   slug: z
     .string()
@@ -52,6 +59,7 @@ export const productSchema = z.object({
   image: z.string().trim().max(600).optional().or(z.literal('')),
   image_alt: z.string().trim().max(160).optional().or(z.literal('')),
   images: z.array(z.string().trim().max(600)).max(12).optional(),
+  reviews: z.array(reviewSchema).max(50).optional(),
   in_stock: z.coerce.boolean().optional(),
   badge: z.string().trim().max(40).optional().or(z.literal('')),
   sort_order: z.coerce.number().int().min(0).max(9999).optional(),

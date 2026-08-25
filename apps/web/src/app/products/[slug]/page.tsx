@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ProductGallery } from '@/components/ProductGallery';
+import { ProductReviews } from '@/components/ProductReviews';
 import { getAllProducts, getProductBySlug } from '@/lib/products';
 import { siteConfig } from '@/lib/site';
 import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
@@ -34,18 +35,49 @@ export default async function ProductDetailPage({ params }: Params) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  // NOTE: intentionally no Product JSON-LD here. Google requires a Product
-  // to include at least one of `offers`, `review`, or `aggregateRating` to
-  // be considered valid — this business has no fixed price ("Call for
-  // Price") and no reviews yet, so there is no honest way to satisfy that
-  // requirement. Inventing a price or a fake review to pass validation
-  // would be misleading structured data, which Google explicitly disallows.
-  // Once real customer reviews exist, revisit adding `review`/
-  // `aggregateRating` back. Breadcrumb structured data below still applies
-  // and is fully valid on its own.
+  // Google requires a Product to include at least one of `offers`, `review`,
+  // or `aggregateRating` to be considered valid — this business has no fixed
+  // price ("Call for Price"), so inventing a price would be misleading.
+  // Instead: only emit Product JSON-LD once the product has real customer
+  // reviews (added from the admin panel), computed from — and matching —
+  // the reviews actually rendered on the page below. No reviews yet → no
+  // Product markup at all, which stays fully valid (just without the
+  // enhancement) rather than being "invalid".
+  const reviews = product.reviews ?? [];
+  const hasReviews = reviews.length > 0;
+  const averageRating = hasReviews
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
+
+  const productJsonLd = hasReviews
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        description: product.description,
+        category: product.category,
+        image: `${siteConfig.url}${product.image}`,
+        brand: { '@type': 'Brand', name: siteConfig.name },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: Number(averageRating.toFixed(1)),
+          reviewCount: reviews.length,
+        },
+        review: reviews.map((r) => ({
+          '@type': 'Review',
+          author: { '@type': 'Person', name: r.author },
+          reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+          reviewBody: r.comment || undefined,
+          datePublished: r.date || undefined,
+        })),
+      }
+    : null;
 
   return (
     <>
+      {productJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -138,6 +170,8 @@ export default async function ProductDetailPage({ params }: Params) {
               </div>
             </div>
           </div>
+
+          <ProductReviews reviews={reviews} productName={product.name} />
         </div>
       </section>
     </>

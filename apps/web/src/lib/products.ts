@@ -3,6 +3,7 @@ import {
   products as fallbackProducts,
   getProductBySlug as getFallbackBySlug,
   type Product,
+  type ProductReview,
 } from '@/data/products';
 import { getSupabasePublic, getSupabaseAdmin } from '@/lib/supabase';
 
@@ -30,10 +31,26 @@ type Row = {
   image: string | null;
   image_alt: string | null;
   images: string[] | null;
+  reviews: ProductReview[] | null;
   in_stock: boolean | null;
   badge: string | null;
   sort_order: number | null;
 };
+
+function sanitizeReviews(raw: unknown): ProductReview[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(
+      (r): r is Record<string, unknown> =>
+        !!r && typeof r === 'object' && typeof r.author === 'string' && r.author.trim().length > 0,
+    )
+    .map((r) => ({
+      author: String(r.author).trim().slice(0, 80),
+      rating: Math.min(5, Math.max(1, Math.round(Number(r.rating) || 5))),
+      comment: typeof r.comment === 'string' ? r.comment.trim().slice(0, 1000) : '',
+      date: typeof r.date === 'string' ? r.date : undefined,
+    }));
+}
 
 function rowToProduct(r: Row): Product {
   return {
@@ -50,6 +67,7 @@ function rowToProduct(r: Row): Product {
     image: r.image || '/images/products/placeholder.svg',
     imageAlt: r.image_alt ?? r.name,
     images: Array.isArray(r.images) ? r.images.filter(Boolean) : [],
+    reviews: sanitizeReviews(r.reviews),
     inStock: r.in_stock ?? true,
     badge: r.badge ?? undefined,
     sortOrder: r.sort_order ?? 0,

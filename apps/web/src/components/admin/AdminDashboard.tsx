@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LogoMark } from '@/components/Logo';
 
+type ReviewRow = { author: string; rating: number; comment?: string; date?: string };
+
 type ProductRow = {
   id?: string;
   slug: string;
@@ -19,10 +21,13 @@ type ProductRow = {
   image?: string;
   image_alt?: string;
   images?: string[];
+  reviews?: ReviewRow[];
   in_stock?: boolean;
   badge?: string;
   sort_order?: number;
 };
+
+const emptyReview: ReviewRow = { author: '', rating: 5, comment: '', date: '' };
 
 const emptyProduct: ProductRow = {
   slug: '',
@@ -37,6 +42,7 @@ const emptyProduct: ProductRow = {
   image: '',
   image_alt: '',
   images: [],
+  reviews: [],
   in_stock: true,
   badge: '',
   sort_order: 0,
@@ -150,6 +156,22 @@ export function AdminDashboard({ username }: { username: string }) {
     );
   }
 
+  function addReview() {
+    setEditing((prev) => (prev ? { ...prev, reviews: [...(prev.reviews ?? []), { ...emptyReview }] } : prev));
+  }
+  function updateReview(i: number, patch: Partial<ReviewRow>) {
+    setEditing((prev) =>
+      prev
+        ? { ...prev, reviews: (prev.reviews ?? []).map((r, idx) => (idx === i ? { ...r, ...patch } : r)) }
+        : prev,
+    );
+  }
+  function removeReview(i: number) {
+    setEditing((prev) =>
+      prev ? { ...prev, reviews: (prev.reviews ?? []).filter((_, idx) => idx !== i) } : prev,
+    );
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
@@ -164,6 +186,9 @@ export function AdminDashboard({ username }: { username: string }) {
           ? editing.uses.split(',').map((s) => s.trim()).filter(Boolean)
           : editing.uses,
       images: Array.isArray(editing.images) ? editing.images : [],
+      // Drop rows where the reviewer name was left blank (e.g. an added-then-
+      // abandoned row) rather than sending invalid entries to the server.
+      reviews: (editing.reviews ?? []).filter((r) => r.author.trim().length > 0),
       sort_order: Number(editing.sort_order) || 0,
     };
 
@@ -384,6 +409,72 @@ export function AdminDashboard({ username }: { username: string }) {
                       <button type="button" onClick={() => removeGalleryImage(i)} aria-label="Remove photo"
                         className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-error text-on-error flex items-center justify-center shadow hover:scale-110 transition-transform">
                         <span className="material-symbols-outlined text-[16px]">close</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Customer reviews */}
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <label className={labelC + ' mb-0'}>Customer Reviews</label>
+                  <p className="font-body text-label-sm text-on-surface-variant mt-0.5">
+                    Only add genuine reviews from real customers (in person, phone, WhatsApp). These show
+                    on the product page and let Google display a star rating in search results — fake
+                    reviews can get the site penalized, so please keep this honest.
+                  </p>
+                </div>
+                <button type="button" onClick={addReview}
+                  className="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-heading text-label-sm uppercase tracking-wide hover:bg-primary-container transition-colors inline-flex items-center gap-1 shrink-0">
+                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  Add Review
+                </button>
+              </div>
+
+              {(editing.reviews ?? []).length === 0 ? (
+                <p className="font-body text-label-sm text-on-surface-variant">No reviews yet.</p>
+              ) : (
+                <div className="space-y-3">
+                  {(editing.reviews ?? []).map((r, i) => (
+                    <div key={i} className="border border-surface-variant rounded-lg p-3 grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-2 items-start bg-surface-container-low">
+                      <div className="space-y-2">
+                        <input
+                          value={r.author}
+                          onChange={(e) => updateReview(i, { author: e.target.value })}
+                          placeholder="Customer name"
+                          className="w-full bg-surface-container-lowest border-b-2 border-surface-variant focus:border-primary px-2 py-1.5 rounded-t outline-none font-body text-body-md"
+                        />
+                        <textarea
+                          value={r.comment || ''}
+                          onChange={(e) => updateReview(i, { comment: e.target.value })}
+                          placeholder="What they said (optional)"
+                          rows={2}
+                          className="w-full bg-surface-container-lowest border-b-2 border-surface-variant focus:border-primary px-2 py-1.5 rounded-t outline-none font-body text-body-md resize-none"
+                        />
+                      </div>
+                      <div className="flex sm:flex-col gap-2">
+                        <select
+                          value={r.rating}
+                          onChange={(e) => updateReview(i, { rating: Number(e.target.value) })}
+                          className="bg-surface-container-lowest border-b-2 border-surface-variant focus:border-primary px-2 py-1.5 rounded-t outline-none font-body text-body-md"
+                        >
+                          {[5, 4, 3, 2, 1].map((n) => (
+                            <option key={n} value={n}>{n} ★</option>
+                          ))}
+                        </select>
+                        <input
+                          type="date"
+                          value={r.date || ''}
+                          onChange={(e) => updateReview(i, { date: e.target.value })}
+                          className="bg-surface-container-lowest border-b-2 border-surface-variant focus:border-primary px-2 py-1.5 rounded-t outline-none font-body text-label-sm"
+                        />
+                      </div>
+                      <button type="button" onClick={() => removeReview(i)} aria-label="Remove review"
+                        className="text-error hover:bg-error-container rounded-lg p-2 justify-self-end">
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
                       </button>
                     </div>
                   ))}
