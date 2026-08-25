@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Hanken_Grotesk, Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import { SiteChrome } from '@/components/SiteChrome';
 import { siteConfig } from '@/lib/site';
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen flex flex-col">
         <SiteChrome>{children}</SiteChrome>
+        <Analytics />
       </body>
     </html>
   );
