@@ -53,6 +53,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
+  // NOTE: the apex ↔ www redirect is intentionally NOT handled here. Vercel's
+  // domain settings already redirect kamakhyatraders.shop -> www at the edge
+  // (before this app ever runs). Adding an opposite redirect in this file
+  // would create an infinite redirect loop with that platform-level setting.
+  // Fix the direction in Vercel → Settings → Domains instead (see README),
+  // and keep NEXT_PUBLIC_SITE_URL in sync with whichever host is primary.
   async headers() {
     return [
       {

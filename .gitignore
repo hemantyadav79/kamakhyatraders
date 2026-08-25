@@ -40,6 +40,9 @@ Thumbs.db
 Visit.pdf
 visiting-card.html
 
+# Screaming Frog / SEO audit exports — local analysis artifacts, not code
+*.csv
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
