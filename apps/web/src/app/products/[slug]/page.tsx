@@ -34,25 +34,18 @@ export default async function ProductDetailPage({ params }: Params) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  // NOTE: no `offers` block. Google's Product structured data requires a
-  // real numeric `price` whenever `offers` is present — this business runs
-  // on a "Call for Price" model with no fixed price, so including `offers`
-  // without one is invalid (and inventing a fake price would be misleading
-  // structured data, which Google explicitly disallows). The rest of the
-  // Product fields below don't require a price and remain fully valid.
-  const productJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    description: product.description,
-    category: product.category,
-    image: `${siteConfig.url}${product.image}`,
-    brand: { '@type': 'Brand', name: siteConfig.name },
-  };
+  // NOTE: intentionally no Product JSON-LD here. Google requires a Product
+  // to include at least one of `offers`, `review`, or `aggregateRating` to
+  // be considered valid — this business has no fixed price ("Call for
+  // Price") and no reviews yet, so there is no honest way to satisfy that
+  // requirement. Inventing a price or a fake review to pass validation
+  // would be misleading structured data, which Google explicitly disallows.
+  // Once real customer reviews exist, revisit adding `review`/
+  // `aggregateRating` back. Breadcrumb structured data below still applies
+  // and is fully valid on its own.
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
