@@ -102,6 +102,22 @@ export function Footer() {
           </p>
         </div>
       </div>
+
+      <div className="border-t border-surface-tint/20">
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-4 text-center">
+          <p className="font-body text-label-sm text-on-primary-container opacity-50">
+            Managed and Developed by:{' '}
+            <a
+              href="https://www.scuzi.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-tertiary-fixed opacity-100 hover:underline underline-offset-4 transition-colors"
+            >
+              scuzi.in
+            </a>
+          </p>
+        </div>
+      </div>
     </footer>
   );
 }
