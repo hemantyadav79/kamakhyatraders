@@ -1,0 +1,49 @@
+name: Keep Supabase Awake
+
+# Supabase pauses a free project after ~7 days with no database activity.
+# This job runs a tiny read query so the project always looks active.
+#
+# It runs every 2 days on purpose, NOT weekly: GitHub's scheduled runs can be
+# delayed or skipped when their queues are busy, so a once-a-week ping leaves
+# no margin for error. Every 2 days gives 3 chances before the 7-day deadline.
+
+on:
+  schedule:
+    # 06:00 UTC (11:30 AM IST) every 2nd day
+    - cron: '0 6 */2 * *'
+  # Lets you trigger it by hand from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Supabase
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Run a small read query
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "::error::Missing repository secrets SUPABASE_URL / SUPABASE_ANON_KEY"
+            exit 1
+          fi
+
+          # Reading one row is enough to count as database activity.
+          status=$(curl -sS -o /tmp/response.txt -w '%{http_code}' \
+            "${SUPABASE_URL}/rest/v1/products?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          echo "HTTP status: ${status}"
+          echo "Response: $(cat /tmp/response.txt)"
+
+          if [ "${status}" != "200" ]; then
+            echo "::error::Supabase ping failed with HTTP ${status}"
+            exit 1
+          fi
+
+          echo "✅ Supabase is awake."

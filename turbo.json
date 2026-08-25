@@ -1,0 +1,40 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "NEXT_PUBLIC_SITE_URL",
+        "NEXT_PUBLIC_BUSINESS_PHONE_PRIMARY",
+        "NEXT_PUBLIC_BUSINESS_PHONE_SECONDARY",
+        "NEXT_PUBLIC_WHATSAPP_NUMBER",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET",
+        "CLOUDINARY_UPLOAD_PRESET",
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_USER",
+        "SMTP_PASS",
+        "CONTACT_TO_EMAIL",
+        "ADMIN_USERNAME",
+        "ADMIN_PASSWORD",
+        "ADMIN_SESSION_SECRET"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {}
+  }
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 530 530" width="530" height="530" role="img" aria-label="Plywood">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d2137"/>
+      <stop offset="1" stop-color="#000917"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="530" height="530" fill="url(#bg)"/>
+  <circle cx="265" cy="250" r="150" fill="#ffffff" opacity="0.03"/>
+  
+    <g>
+    <rect x="140" y="430" width="250" height="26" rx="3" fill="#e8bd7a" stroke="#a9752f" stroke-width="1.5"/><rect x="137" y="404" width="250" height="26" rx="3" fill="#d8a55a" stroke="#a9752f" stroke-width="1.5"/><rect x="134" y="378" width="250" height="26" rx="3" fill="#e8bd7a" stroke="#a9752f" stroke-width="1.5"/><rect x="131" y="352" width="250" height="26" rx="3" fill="#d8a55a" stroke="#a9752f" stroke-width="1.5"/><rect x="128" y="326" width="250" height="26" rx="3" fill="#e8bd7a" stroke="#a9752f" stroke-width="1.5"/><rect x="125" y="300" width="250" height="26" rx="3" fill="#d8a55a" stroke="#a9752f" stroke-width="1.5"/>
+    </g>
+  <rect x="0" y="482" width="530" height="48" fill="#000917"/>
+  <rect x="0" y="478" width="530" height="4" fill="#fdbc0a"/>
+  <text x="26" y="514" font-family="Arial, sans-serif" font-size="26" font-weight="800" fill="#ffffff">Plywood</text>
+  <text x="504" y="514" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#ffdea3" text-anchor="end">पलाई</text>
+</svg>

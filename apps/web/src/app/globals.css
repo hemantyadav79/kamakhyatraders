@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-on-background antialiased;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Consistent focus ring for keyboard users (accessibility) */
+  :focus-visible {
+    outline: 3px solid #bb0114;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Material Symbols icon defaults */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  /* Reusable "hard shadow" accent used across the reference design */
+  .accent-shadow-gold {
+    box-shadow: 8px 8px 0 0 #fdbc0a;
+  }
+  .accent-shadow-gold-sm {
+    box-shadow: 4px 4px 0 0 #fdbc0a;
+  }
+
+  /* --- Scroll reveal ------------------------------------------------------
+     Elements start slightly down + transparent, then ease into place when
+     they scroll into view (the `is-visible` class is added by <Reveal>). */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Subtle lift on interactive cards */
+  .card-lift {
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px -12px rgba(0, 9, 23, 0.28);
+  }
+
+  /* Slow zoom for hero imagery */
+  @keyframes kt-slow-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  .animate-slow-zoom {
+    animation: kt-slow-zoom 14s ease-out forwards;
+  }
+
+  /* Gentle fade-in-up used by the hero copy (no scroll trigger needed) */
+  @keyframes kt-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+  }
+  .animate-fade-up {
+    animation: kt-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
