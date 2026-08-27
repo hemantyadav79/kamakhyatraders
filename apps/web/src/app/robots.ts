@@ -12,6 +12,9 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${siteConfig.url}/sitemap.xml`,
-    host: siteConfig.url,
+    // No `host` directive: it's a Yandex-only extension that Googlebot
+    // explicitly ignores (flagged as a warning in Search Console). Canonical
+    // domain preference is already established via the www->apex redirect
+    // and canonical tags, so this line added nothing for Google.
   };
 }
