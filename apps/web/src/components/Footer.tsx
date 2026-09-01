@@ -122,13 +122,22 @@ export function Footer({
       </div>
 
       <div className="border-t border-surface-tint/30">
-        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-6 flex flex-col sm:flex-row justify-between gap-2 text-center sm:text-left">
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-6 flex flex-col md:flex-row md:flex-wrap justify-between items-center gap-3 text-center md:text-left">
           <p className="font-body text-label-sm text-on-primary-container opacity-60">
             © {year} {siteConfig.name}. All Rights Reserved.
           </p>
-          <p className="font-body text-label-sm text-on-primary-container opacity-60">
+          <p className="font-body text-label-sm text-on-primary-container opacity-60 order-last md:order-none">
             {siteConfig.taglineEn}
           </p>
+          <div className="flex items-center gap-4 font-body text-label-sm text-on-primary-container opacity-60">
+            <Link href="/privacy" className="hover:text-tertiary-fixed hover:opacity-100 hover:underline underline-offset-4 transition-colors">
+              Privacy Policy
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link href="/terms" className="hover:text-tertiary-fixed hover:opacity-100 hover:underline underline-offset-4 transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
 

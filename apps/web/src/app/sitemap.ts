@@ -16,6 +16,9 @@ import { siteConfig } from '@/lib/site';
 /** Bump this when the wording on /, /products, /about or /contact changes. */
 const STATIC_CONTENT_UPDATED = new Date('2026-09-01T00:00:00.000Z');
 
+/** Keep in step with the `UPDATED` date shown on /privacy and /terms. */
+const LEGAL_UPDATED = new Date('2026-09-01T00:00:00.000Z');
+
 function toDate(value: string | undefined, fallback: Date): Date {
   if (!value) return fallback;
   const d = new Date(value);
@@ -55,6 +58,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: STATIC_CONTENT_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.8,
+    },
+    // Legal pages: worth indexing (they are a trust signal, and Google likes to
+    // see them on a business site) but they should never outrank the catalogue.
+    {
+      url: `${siteConfig.url}/privacy`,
+      lastModified: LEGAL_UPDATED,
+      changeFrequency: 'yearly',
+      priority: 0.2,
+    },
+    {
+      url: `${siteConfig.url}/terms`,
+      lastModified: LEGAL_UPDATED,
+      changeFrequency: 'yearly',
+      priority: 0.2,
     },
   ];
 

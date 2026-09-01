@@ -192,11 +192,13 @@ kamakhya-traders/
 │       ├── src/
 │       │   ├── app/
 │       │   │   ├── (site pages)      # /, /products, /products/[slug], /about, /contact
-│       │   │   ├── admin-gunnu-org/  # 🔒 Hidden admin panel + /hero settings
+│       │   │   ├── privacy/ terms/   # Privacy Policy + Terms of Service
+│       │   │   ├── admin-gunnu-org/  # 🔒 Hidden admin panel + /hero, /reviews
 │       │   │   ├── api/
 │       │   │   │   ├── contact/      # Gmail SMTP, rate-limited, honeypot
+│       │   │   │   ├── reviews/      # public review submission (filtered)
 │       │   │   │   ├── auth/         # login / logout (signed cookie)
-│       │   │   │   └── admin/        # products CRUD, hero/about settings, uploads
+│       │   │   │   └── admin/        # products + reviews CRUD, settings, uploads
 │       │   │   ├── sitemap.ts · robots.ts · opengraph-image.tsx
 │       │   ├── components/           # Header, Footer, Hero, ProductCard, admin UI…
 │       │   ├── data/                 # Built-in product catalogue (fallback + seed source)
