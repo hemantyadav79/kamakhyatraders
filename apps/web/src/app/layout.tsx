@@ -3,8 +3,14 @@ import { Hanken_Grotesk, Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import { SiteChrome } from '@/components/SiteChrome';
+import { getAllProducts } from '@/lib/products';
 import { siteConfig } from '@/lib/site';
 import { localBusinessJsonLd } from '@/lib/seo';
+
+// The footer lists every product, so the catalogue is read here. Matches the
+// 5-minute window the pages already use, keeping every route on ISR rather
+// than turning the whole site dynamic.
+export const revalidate = 300;
 
 const hanken = Hanken_Grotesk({
   subsets: ['latin'],
@@ -39,7 +45,10 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const products = await getAllProducts();
+  const productLinks = products.map((p) => ({ name: p.name, slug: p.slug }));
+
   return (
     <html lang="en" className={`${hanken.variable} ${inter.variable}`}>
       <head>
@@ -55,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen flex flex-col">
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome productLinks={productLinks}>{children}</SiteChrome>
         <Analytics />
       </body>
     </html>

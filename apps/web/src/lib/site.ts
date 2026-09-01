@@ -25,7 +25,7 @@ export const siteConfig = {
   tagline: 'Behtareen Quality • Uchit Mulya • Aapki Santushti Hamari Pehchan',
   taglineEn: 'Best Quality • Fair Price • Your Satisfaction is Our Identity',
   shortDescription:
-    'Kamakhya Traders — building materials supplier at Neora, near Railway Gumti, Patna (Bihar). Cement, iron rods, stone chips (gitti), sand (balu), bricks, bamboo & plywood at fair prices. Serving Neora, Danapur, Bihta, Khagaul & Patna.',
+    'Kamakhya Traders — building materials supplier in Danapur, Patna (Bihar), at Neora near Railway Gumti. Cement, iron rods, stone chips (gitti), sand (balu), bricks, bamboo & plywood at fair prices. Serving Danapur, Neora, Khagaul, Bihta, Phulwari Sharif & all of Patna.',
 
   url: (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, ''),
 
@@ -52,14 +52,26 @@ export const siteConfig = {
     state: 'Bihar',
     postalCode: '801113',
     country: 'IN',
-    full: 'Neora, Near Railway Gumti, Patna, Bihar – 801113',
-    serviceArea: ['Neora', 'Danapur', 'Bihta', 'Khagaul', 'Patna', 'Phulwari Sharif'],
-    // Geo coordinates (from the shop's Google Maps pin) — strong local-SEO signal.
-    lat: 25.5759647,
-    lng: 84.9881771,
-    // Google Maps: short link for "Get Directions", embed URL for the map iframe.
-    mapLink: 'https://maps.app.goo.gl/Pb4a8YEKzRkcTcFG8',
-    mapEmbed: 'https://maps.google.com/maps?q=25.5759647,84.9881771&z=16&output=embed',
+    // "Danapur" is part of the written address on purpose: Google matches a
+    // business to a locality partly on the address shown across the site, and
+    // most customers search "Danapur", not "Neora".
+    full: 'Neora, Near Railway Gumti, Danapur, Patna, Bihar – 801113',
+    serviceArea: [
+      'Neora',
+      'Danapur',
+      'Khagaul',
+      'Bihta',
+      'Patna',
+      'Phulwari Sharif',
+      'Maner',
+      'Saguna More',
+      'Rupaspur',
+      'Digha',
+    ],
+    // Geo coordinates of the shop's Google Maps pin — strong local-SEO signal.
+    lat: 25.5762009,
+    lng: 84.9904572,
+    mapLink: 'https://maps.app.goo.gl/yWJDBvu5q3n9Xxjh6',
   },
 
   email: process.env.CONTACT_TO_EMAIL || 'kamakhyatradeshouse@gmail.com',
@@ -78,3 +90,34 @@ export const siteConfig = {
 } as const;
 
 export type SiteConfig = typeof siteConfig;
+
+// -----------------------------------------------------------------------------
+// Google Maps links, all derived from the single pin in `address` above.
+//
+// The old "Get Directions" link was a Maps share URL whose place name was empty
+// (.../maps/place//@lat,lng), which opens Maps centred on the area but with no
+// marker and no place card — it looked like the location was missing. These
+// links always show the pin.
+// -----------------------------------------------------------------------------
+
+const PIN = `${siteConfig.address.lat},${siteConfig.address.lng}`;
+
+/**
+ * Map shown in the iframe on the Contact page. The `(Name)` suffix is Maps'
+ * label syntax, so the marker is captioned with the shop name instead of
+ * dropping an anonymous pin.
+ */
+export const mapEmbedUrl =
+  `https://maps.google.com/maps?q=${PIN}(${encodeURIComponent(siteConfig.name)})` +
+  `&z=17&hl=en&output=embed`;
+
+/**
+ * "Get Directions". Uses the documented Maps URL API, which opens turn-by-turn
+ * navigation to the pin from wherever the visitor is — the thing someone
+ * actually wants when they tap Directions.
+ */
+export const mapDirectionsUrl =
+  `https://www.google.com/maps/dir/?api=1&destination=${PIN}`;
+
+/** "Open in Google Maps" — the shop's own shared Maps link. */
+export const mapPlaceUrl: string = siteConfig.address.mapLink;

@@ -13,11 +13,11 @@ import { pageMetadata } from '@/lib/seo';
 export const revalidate = 300;
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Kamakhya Traders — Building Materials Supplier at Neora, Patna',
+  title: 'Kamakhya Traders — Building Materials in Danapur, Patna',
   description:
-    'Kamakhya Traders at Neora, near Railway Gumti, Patna (Bihar – 801113). Quality cement, iron rods (chhad), stone chips (gitti), sand (balu), bricks, bamboo & plywood at fair prices. Serving Neora, Danapur, Bihta, Khagaul & Patna. Call for today’s rate.',
+    'Building materials supplier in Danapur, Patna (Bihar – 801113) — at Neora, near Railway Gumti. Quality cement, iron rods (chhad), stone chips (gitti), sand (balu), bricks, bamboo & plywood at fair prices. Serving Danapur, Neora, Khagaul, Bihta, Phulwari Sharif & all of Patna. Call for today’s rate.',
   path: '/',
-  keywords: ['cement shop Neora Patna', 'sariya rate Danapur', 'gitti balu Bihta Patna', 'building material supplier near me Patna', 'building materials near railway gumti'],
+  keywords: ['building materials in Patna Danapur', 'building material shop Danapur', 'cement shop Danapur Patna', 'sariya rate Danapur', 'gitti balu Danapur Patna', 'building material supplier near me Patna'],
 });
 
 const trustPoints = [

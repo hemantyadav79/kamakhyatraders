@@ -11,23 +11,6 @@
 // The call-to-action on every product is "Call for Price".
 // -----------------------------------------------------------------------------
 
-/**
- * A genuine customer review, entered by the admin from real feedback (in
- * person, by phone/WhatsApp, etc). This is what makes `aggregateRating` in
- * the product's structured data valid — Google requires review/rating data
- * in structured markup to reflect real, visible content on the page, not
- * numbers with nothing behind them. Each review here is rendered on the
- * product page for visitors to read.
- */
-export type ProductReview = {
-  author: string;
-  /** 1–5 stars. */
-  rating: number;
-  comment: string;
-  /** ISO date string (yyyy-mm-dd). Optional. */
-  date?: string;
-};
-
 export type Product = {
   id: string;
   slug: string;
@@ -49,12 +32,12 @@ export type Product = {
   imageAlt: string;
   /** Additional gallery images for the detail-page carousel. */
   images?: string[];
-  /** Real customer reviews. Empty by default — add genuine ones from the admin. */
-  reviews?: ProductReview[];
   inStock: boolean;
   badge?: string;
   /** Higher = shown earlier. */
   sortOrder: number;
+  /** When the row last changed in the database. Drives sitemap <lastmod>. */
+  updatedAt?: string;
 };
 
 export const products: Product[] = [

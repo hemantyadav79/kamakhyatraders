@@ -3,16 +3,16 @@ import { getAllProducts } from '@/lib/products';
 import { ProductCard } from '@/components/ProductCard';
 import { Reveal } from '@/components/Reveal';
 import { siteConfig } from '@/lib/site';
-import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
+import { pageMetadata, breadcrumbJsonLd, productListJsonLd } from '@/lib/seo';
 
 export const revalidate = 300;
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Products — Cement, Iron Rods, Gitti, Balu, Bricks & More',
+  title: 'Building Materials in Danapur, Patna — Cement, Sariya, Gitti, Balu & More',
   description:
-    'Building materials from Kamakhya Traders, Neora (near Railway Gumti), Patna: cement, iron rods (chhad), stone chips (gitti), sand (balu), bricks, bamboo & plywood. Delivered across Neora, Danapur, Bihta & Patna. Call for the best price.',
+    'Full range of building materials from Kamakhya Traders, Danapur, Patna: cement, iron rods (chhad), stone chips (gitti), sand (balu), bricks, bamboo & plywood. Supplied across Danapur, Neora, Khagaul, Bihta, Phulwari Sharif & Patna. Call for the best price.',
   path: '/products',
-  keywords: ['cement price Neora Patna', 'iron rod dealer Danapur', 'gitti supplier Bihta', 'plywood shop Patna', 'sariya rate near railway gumti'],
+  keywords: ['building materials list Danapur Patna', 'cement price Danapur Patna', 'iron rod dealer Danapur', 'gitti supplier Danapur', 'plywood shop Patna', 'sariya rate Danapur'],
 });
 
 export default async function ProductsPage() {
@@ -31,6 +31,10 @@ export default async function ProductsPage() {
           ),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productListJsonLd(products)) }}
+      />
 
       {/* Page header */}
       <section className="bg-primary text-on-primary py-14 md:py-20">
@@ -39,11 +43,11 @@ export default async function ProductsPage() {
             Our Catalog
           </p>
           <h1 className="font-heading text-headline-lg-mobile md:text-headline-lg mb-4">
-            Building Materials
+            Building Materials in Danapur, Patna
           </h1>
           <p className="font-body text-body-lg text-primary-fixed-dim max-w-2xl">
             Everything for your construction — supplied fresh from our shop at Neora, near Railway
-            Gumti, Patna, across Danapur, Bihta &amp; nearby areas.
+            Gumti, Danapur, across Khagaul, Bihta, Phulwari Sharif &amp; the rest of Patna.
             Tap <strong className="text-tertiary-fixed">Call for Price</strong> on any item for today&apos;s rate.
           </p>
         </div>

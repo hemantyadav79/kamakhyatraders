@@ -1,17 +1,15 @@
 import type { Metadata } from 'next';
 import { ContactForm } from '@/components/ContactForm';
-import { siteConfig } from '@/lib/site';
+import { siteConfig, mapEmbedUrl, mapDirectionsUrl, mapPlaceUrl } from '@/lib/site';
 import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Contact Us — Building Materials at Neora, Patna',
+  title: 'Contact Us — Building Materials Shop in Danapur, Patna',
   description:
-    'Contact Kamakhya Traders, Neora, near Railway Gumti, Patna (Bihar – 801113). Call, WhatsApp or send an enquiry for cement, iron rods, gitti, balu, bricks, bamboo & plywood. Open Mon–Sun, 7 AM–6 PM. Get directions on the map.',
+    'Contact Kamakhya Traders — Neora, near Railway Gumti, Danapur, Patna (Bihar – 801113). Call, WhatsApp or send an enquiry for cement, iron rods, gitti, balu, bricks, bamboo & plywood. Open Mon–Sun, 7 AM–6 PM. Map and directions to our shop below.',
   path: '/contact',
-  keywords: ['contact Kamakhya Traders', 'building material shop Neora contact', 'cement dealer phone number Patna', 'building materials near railway gumti Patna'],
+  keywords: ['contact Kamakhya Traders', 'building material shop Danapur contact', 'building materials shop address Danapur Patna', 'cement dealer phone number Patna', 'building materials near railway gumti Patna'],
 });
-
-const directionsUrl = siteConfig.address.mapLink;
 
 export default function ContactPage() {
   return (
@@ -115,24 +113,32 @@ export default function ContactPage() {
                     {siteConfig.address.line1}
                   </p>
                   <p className="font-body text-body-md text-on-surface-variant">
-                    {siteConfig.address.city}, {siteConfig.address.state} – {siteConfig.address.postalCode}
+                    {siteConfig.address.area}, {siteConfig.address.city}, {siteConfig.address.state} –{' '}
+                    {siteConfig.address.postalCode}
                   </p>
                 </div>
 
-                {/* Google Map */}
+                {/* Google Map. The marker is labelled with the shop name via
+                    Maps' q=lat,lng(Name) syntax — see lib/site.ts. */}
                 <div className="relative border-y border-surface-variant overflow-hidden">
                   <iframe
-                    src={siteConfig.address.mapEmbed}
+                    src={mapEmbedUrl}
                     title={`Map to ${siteConfig.name}, ${siteConfig.address.full}`}
                     className="w-full h-72 border-0 grayscale-[35%] group-hover:grayscale-0 transition-[filter] duration-500"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                    // Delegates geolocation to the map so "directions from your
+                    // location" works. Paired with the Permissions-Policy header
+                    // in next.config.js; the browser still prompts the visitor.
+                    allow="geolocation"
                     allowFullScreen
                   />
                 </div>
 
+                {/* Two separate jobs: start navigation, or just look at the pin
+                    on Google Maps. */}
                 <a
-                  href={directionsUrl}
+                  href={mapDirectionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-secondary text-on-secondary font-heading text-label-bold uppercase tracking-wide px-4 py-4 hover:bg-secondary-container transition-colors"
@@ -140,7 +146,61 @@ export default function ContactPage() {
                   <span className="material-symbols-outlined text-[18px]">directions</span>
                   Get Directions
                 </a>
+                <a
+                  href={mapPlaceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 border-t border-surface-variant text-primary font-heading text-label-bold uppercase tracking-wide px-4 py-3.5 hover:bg-surface-container-high transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">location_on</span>
+                  Open in Google Maps
+                </a>
               </div>
+            </div>
+          </div>
+
+          {/* Where we deliver. Real, useful detail for a customer deciding
+              whether we cover their site — and the plain-language version of
+              the areas listed in the LocalBusiness structured data. */}
+          <div className="mt-14 pt-10 border-t-2 border-surface-variant">
+            <h2 className="font-heading text-headline-md text-primary mb-3">
+              Areas We Supply Building Materials To
+            </h2>
+            <p className="font-body text-body-lg text-on-surface-variant max-w-3xl mb-6">
+              Our shop is at Neora, near the Railway Gumti in{' '}
+              <strong className="text-primary">Danapur, Patna</strong>. We supply cement, iron rods
+              (sariya), stone chips (gitti), sand (balu), bricks, bamboo and plywood — by the bag or
+              by the truckload — across Danapur and the surrounding parts of Patna. Not sure if we
+              deliver to your site? Call us and ask.
+            </p>
+            <ul className="flex flex-wrap gap-2.5 mb-8">
+              {siteConfig.address.serviceArea.map((area) => (
+                <li
+                  key={area}
+                  className="bg-surface-container-high text-on-surface font-body text-body-md px-4 py-2 rounded"
+                >
+                  {area}
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
+              <a
+                href={siteConfig.telPrimary}
+                className="flex-1 bg-secondary text-on-secondary px-6 py-4 rounded font-heading text-label-bold uppercase tracking-wide hover:bg-secondary-container transition-colors flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[20px]">call</span>
+                {siteConfig.phones.primaryDisplay}
+              </a>
+              <a
+                href={siteConfig.whatsappLink(
+                  'Hello Kamakhya Traders, do you deliver building materials to my area?',
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-whatsapp text-white px-6 py-4 rounded font-heading text-label-bold uppercase tracking-wide hover:bg-whatsapp-dark transition-colors flex items-center justify-center gap-2"
+              >
+                Ask on WhatsApp
+              </a>
             </div>
           </div>
         </div>

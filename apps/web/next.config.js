@@ -21,7 +21,12 @@ const ContentSecurityPolicy = [
   // XHR/fetch: our own API + Supabase + Cloudinary upload endpoint.
   "connect-src 'self' https://*.supabase.co https://api.cloudinary.com",
   // Allow embedding the Google Maps iframe on the Contact page.
-  "frame-src https://maps.google.com https://www.google.com",
+  // maps.google.com redirects the embed to www.google.com/maps/embed — and for
+  // visitors in India it can land on the .co.in country domain instead. Listing
+  // only the two .com hosts meant that redirect was blocked by CSP and the map
+  // rendered as an empty box, so both Google domains are allowed here.
+  // Still Google-only: no other third party may be framed.
+  "frame-src https://*.google.com https://*.google.co.in",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -41,7 +46,11 @@ const securityHeaders = [
   },
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+    // Geolocation is granted to the embedded Google Map only (never to this
+    // site itself), so "Directions from your location" works inside the map.
+    // The browser still asks the visitor for permission first.
+    value:
+      'camera=(), microphone=(), geolocation=("https://www.google.com" "https://www.google.co.in"), browsing-topics=()',
   },
 ];
 

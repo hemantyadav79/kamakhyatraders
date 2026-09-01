@@ -7,11 +7,11 @@ import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
 export const revalidate = 300;
 
 export const metadata: Metadata = pageMetadata({
-  title: 'About Us — Trusted Building Materials Supplier at Neora, Patna',
+  title: 'About Us — Trusted Building Materials Supplier in Danapur, Patna',
   description:
-    'Kamakhya Traders, led by Gajendra Kumar, is a trusted supplier of cement, iron rods, gitti, balu, bricks, bamboo and plywood at Neora, near Railway Gumti, Patna (Bihar). Serving Neora, Danapur, Bihta, Khagaul & Patna with quality at fair prices.',
+    'Kamakhya Traders, led by Gajendra Kumar, is a trusted building materials supplier in Danapur, Patna (Bihar) — cement, iron rods, gitti, balu, bricks, bamboo and plywood. Based at Neora, near Railway Gumti, serving Danapur, Khagaul, Bihta, Phulwari Sharif & all of Patna at fair prices.',
   path: '/about',
-  keywords: ['about Kamakhya Traders', 'building material supplier Neora', 'construction material shop Danapur Patna', 'building materials Bihta'],
+  keywords: ['about Kamakhya Traders', 'building material supplier Danapur', 'construction material shop Danapur Patna', 'trusted building materials Patna'],
 });
 
 const values = [
@@ -54,9 +54,10 @@ export default async function AboutPage() {
               At Kamakhya Traders, under the leadership of{' '}
               <strong className="text-primary">Prop. {siteConfig.proprietor}</strong>, we supply the
               materials that hold up homes, shops and buildings — from our shop at{' '}
-              <strong className="text-primary">Neora, near Railway Gumti, Patna</strong>, across Danapur,
-              Bihta, Khagaul and nearby areas. From cement and iron rods to gitti, balu, bricks, bamboo
-              and plywood — we are your single, reliable source for construction supplies.
+              <strong className="text-primary">Neora, near Railway Gumti, Danapur, Patna</strong>, across
+              Khagaul, Bihta, Phulwari Sharif and the rest of Patna. From cement and iron rods to gitti,
+              balu, bricks, bamboo and plywood — we are your single, reliable source for construction
+              supplies.
             </p>
             <div className="flex flex-wrap gap-6 pt-2">
               <a href={siteConfig.telPrimary} className="flex items-center gap-2 font-heading text-label-bold text-primary hover:text-secondary transition-colors">
@@ -132,9 +133,10 @@ export default async function AboutPage() {
       <section className="relative bg-primary text-on-primary py-14 md:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }} aria-hidden="true" />
         <div className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
-          <h2 className="font-heading text-headline-lg-mobile md:text-headline-lg mb-4">We Serve Neora, Danapur, Bihta &amp; Patna</h2>
+          <h2 className="font-heading text-headline-lg-mobile md:text-headline-lg mb-4">Building Materials Across Danapur &amp; Patna</h2>
           <p className="font-body text-body-lg text-on-primary-container max-w-2xl mx-auto mb-8">
-            Reliable supply of construction materials across the region.
+            Reliable supply of construction materials from our shop at Neora, near Railway Gumti,
+            Danapur — to sites right across Patna.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {siteConfig.address.serviceArea.map((area) => (

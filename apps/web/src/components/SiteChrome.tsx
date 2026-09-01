@@ -7,7 +7,14 @@ import { WhatsAppFloat } from '@/components/WhatsAppFloat';
 
 // Wraps page content with the public header/footer/WhatsApp button — except on
 // the admin panel, which gets a clean, chrome-free full-page layout.
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export function SiteChrome({
+  children,
+  productLinks,
+}: {
+  children: React.ReactNode;
+  /** Passed down from the server layout so the footer can link every product. */
+  productLinks: { name: string; slug: string }[];
+}) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin-gunnu-org');
 
@@ -31,7 +38,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       <main id="main" className="flex-grow">
         {children}
       </main>
-      <Footer />
+      <Footer productLinks={productLinks} />
       <WhatsAppFloat />
     </>
   );

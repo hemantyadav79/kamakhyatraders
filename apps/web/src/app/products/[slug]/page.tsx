@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ProductGallery } from '@/components/ProductGallery';
 import { ProductReviews } from '@/components/ProductReviews';
+import { ProductCard } from '@/components/ProductCard';
 import { getAllProducts, getProductBySlug } from '@/lib/products';
+import { getApprovedReviews, isProductId } from '@/lib/reviews';
 import { siteConfig } from '@/lib/site';
 import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
 
@@ -23,10 +25,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!product) return pageMetadata({ title: 'Product not found', description: '', path: `/products/${slug}` });
 
   return pageMetadata({
-    title: `${product.name} in Patna & Danapur`,
-    description: `${product.summary} Buy ${product.name} (${product.nameHindi}) from Kamakhya Traders, Danapur, Patna. Call ${siteConfig.phones.primaryDisplay} for the best price.`,
+    title: `${product.name} Dealer in Danapur & Patna — Price on Call`,
+    description: `${product.summary} Buy ${product.name} (${product.nameHindi}) from Kamakhya Traders — building materials supplier in Danapur, Patna, serving Neora, Khagaul, Bihta & Phulwari Sharif. Call ${siteConfig.phones.primaryDisplay} for today's rate.`,
     path: `/products/${product.slug}`,
-    keywords: [`${product.name} Patna`, `${product.name} price Danapur`, `${product.name} dealer near me`],
+    keywords: [
+      `${product.name} Patna`,
+      `${product.name} Danapur`,
+      `${product.name} price in Patna`,
+      `${product.name} price Danapur`,
+      `${product.name} dealer in Danapur`,
+      `${product.name} supplier Patna`,
+      `${product.name} shop near me`,
+    ],
   });
 }
 
@@ -35,15 +45,26 @@ export default async function ProductDetailPage({ params }: Params) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
+  // Reviews live in their own table (visitors write them, the owner moderates).
+  // `canReview` is false for the built-in fallback catalogue, whose ids are
+  // slugs rather than database uuids — there would be no row to attach to.
+  const canReview = isProductId(product.id);
+  const reviews = await getApprovedReviews(product.id);
+
+  // Sibling products, for visitors browsing around and for search engines:
+  // without these, each product page was a dead end that only linked back up
+  // to /products, which is part of why the deeper pages were slow to be indexed.
+  const allProducts = await getAllProducts();
+  const related = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
+
   // Google requires a Product to include at least one of `offers`, `review`,
   // or `aggregateRating` to be considered valid — this business has no fixed
   // price ("Call for Price"), so inventing a price would be misleading.
   // Instead: only emit Product JSON-LD once the product has real customer
-  // reviews (added from the admin panel), computed from — and matching —
-  // the reviews actually rendered on the page below. No reviews yet → no
-  // Product markup at all, which stays fully valid (just without the
-  // enhancement) rather than being "invalid".
-  const reviews = product.reviews ?? [];
+  // reviews, computed from — and matching — the approved reviews actually
+  // rendered on the page below. No reviews yet → no Product markup at all,
+  // which stays fully valid (just without the enhancement) rather than
+  // being "invalid".
   const hasReviews = reviews.length > 0;
   const averageRating = hasReviews
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
@@ -68,7 +89,7 @@ export default async function ProductDetailPage({ params }: Params) {
           author: { '@type': 'Person', name: r.author },
           reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
           reviewBody: r.comment || undefined,
-          datePublished: r.date || undefined,
+          datePublished: r.createdAt ? r.createdAt.slice(0, 10) : undefined,
         })),
       }
     : null;
@@ -171,7 +192,43 @@ export default async function ProductDetailPage({ params }: Params) {
             </div>
           </div>
 
-          <ProductReviews reviews={reviews} productName={product.name} />
+          <ProductReviews
+            reviews={reviews}
+            productId={product.id}
+            productName={product.name}
+            canReview={canReview}
+          />
+
+          {/* Related materials — keeps visitors browsing and gives every
+              product page inbound links from its siblings. */}
+          {related.length > 0 && (
+            <section className="mt-16 pt-10 border-t-2 border-surface-variant">
+              <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+                <div>
+                  <h2 className="font-heading text-headline-md text-primary mb-1">
+                    Other Building Materials We Supply
+                  </h2>
+                  <p className="font-body text-body-md text-on-surface-variant">
+                    Available at our shop in Danapur, Patna — and delivered nearby.
+                  </p>
+                </div>
+                <Link
+                  href="/products"
+                  className="text-secondary font-heading text-label-bold uppercase tracking-wide hover:text-secondary-container transition-colors inline-flex items-center gap-1 group"
+                >
+                  View All Materials
+                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+                    east
+                  </span>
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                {related.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </section>
     </>

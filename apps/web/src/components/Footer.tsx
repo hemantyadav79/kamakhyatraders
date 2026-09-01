@@ -2,12 +2,17 @@ import Link from 'next/link';
 import { siteConfig } from '@/lib/site';
 import { LogoMark } from '@/components/Logo';
 
-export function Footer() {
+export function Footer({
+  productLinks,
+}: {
+  /** Every product, so each detail page has a link from every page on the site. */
+  productLinks: { name: string; slug: string }[];
+}) {
   const year = new Date().getFullYear();
 
   return (
     <footer className="w-full bg-primary border-t-4 border-tertiary-fixed">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 md:py-24">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-gutter max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 md:py-24">
         {/* Brand */}
         <div className="md:col-span-1 flex flex-col gap-4">
           <div className="flex items-center gap-3">
@@ -24,6 +29,9 @@ export function Footer() {
           </p>
           <p className="font-body text-label-sm text-on-primary-container opacity-70">
             Prop. {siteConfig.proprietor}
+          </p>
+          <p className="font-body text-label-sm text-on-primary-container opacity-70">
+            Serving {siteConfig.address.serviceArea.slice(0, 6).join(', ')} &amp; nearby areas.
           </p>
         </div>
 
@@ -55,6 +63,27 @@ export function Footer() {
               <span className="material-symbols-outlined text-[18px] mt-0.5">location_on</span>
               <span>{siteConfig.address.full}</span>
             </li>
+          </ul>
+        </div>
+
+        {/* Materials — a site-wide link to every product page. Search engines
+            weigh internal links heavily when deciding which pages to crawl and
+            index, and these were previously reachable only from /products. */}
+        <div className="flex flex-col gap-4">
+          <h4 className="font-heading text-label-bold text-tertiary-fixed uppercase tracking-wider">
+            Our Materials
+          </h4>
+          <ul className="space-y-3 font-body text-body-md text-on-primary-container opacity-90">
+            {productLinks.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/products/${p.slug}`}
+                  className="hover:text-tertiary-fixed hover:underline underline-offset-4 transition-colors"
+                >
+                  {p.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 

@@ -158,15 +158,28 @@ erDiagram
         text badge
         int sort_order
     }
+    PRODUCT_REVIEWS {
+        uuid id PK
+        uuid product_id FK
+        text author
+        smallint rating "1-5"
+        text comment
+        text status "pending | approved | rejected"
+        text hold_reason "why the filter held it"
+        timestamptz created_at
+    }
     SITE_SETTINGS {
         text key PK "hero | about"
         jsonb value "carousel slides, overlay %, About photo"
     }
+    PRODUCTS ||--o{ PRODUCT_REVIEWS : has
 ```
 
-Both tables have **Row-Level Security** enabled: anyone can `SELECT`, nobody
-can write except the server (via the service-role key). See
-[`supabase/schema.sql`](supabase/schema.sql).
+Every table has **Row-Level Security** enabled. Anyone may `SELECT` products
+and site settings; for `product_reviews` the public policy exposes only rows
+with `status = 'approved'`, so a held review cannot leak to a visitor even if
+the storefront code had a bug. Nothing is writable except through the server
+(service-role key). See [`supabase/schema.sql`](supabase/schema.sql).
 
 ---
 
@@ -194,7 +207,8 @@ kamakhya-traders/
 │   ├── schema.sql                    # Tables + Row-Level Security — run once
 │   ├── seed.sql                      # Loads the 7 default products
 │   ├── hero-settings.sql             # Hero carousel + About-photo settings table
-│   └── product-images.sql            # Adds the product photo gallery column
+│   ├── product-images.sql            # Adds the product photo gallery column
+│   └── product-reviews-table.sql     # Customer reviews table + RLS + migration
 ├── .github/workflows/
 │   └── supabase-keepalive.yml        # Pings Supabase every 2 days so the free tier never pauses
 ├── .env.example                      # Every environment variable, documented
@@ -225,7 +239,13 @@ environment variables.
    `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable),
    `SUPABASE_SERVICE_ROLE_KEY` (secret — server only).
 3. **SQL Editor** → run in order: `schema.sql` → `seed.sql` →
-   `hero-settings.sql` → `product-images.sql`.
+   `hero-settings.sql` → `product-images.sql` → `product-reviews-table.sql`.
+
+   > `product-reviews-table.sql` is required for customer reviews. Until it is
+   > run, product pages simply show no reviews and the review form returns a
+   > "not available right now" message — nothing else breaks. Running it also
+   > copies any reviews previously stored on `products.reviews` into the new
+   > table. It is safe to re-run.
 
 ### 2 · Cloudinary (product images)
 
@@ -265,15 +285,53 @@ Full step-by-step for each service lives inline in
 
 ---
 
+## ⭐ Customer reviews
+
+Visitors write reviews on each product page; the owner moderates them from
+**`/admin-gunnu-org/reviews`**.
+
+```
+visitor submits  →  POST /api/reviews  →  rate limit + honeypot + abuse filter
+                                                  │
+                        clean ──────────────────► status: approved  (live at once)
+                        suspicious ─────────────► status: pending   (hidden, owner decides)
+```
+
+- **The filter** ([`src/lib/review-filter.ts`](apps/web/src/lib/review-filter.ts))
+  holds anything containing abuse (English, romanised Hindi and Devanagari),
+  links, email addresses, phone numbers, repeated-character spam or ALL CAPS.
+  It checks the reviewer's name as well as the text. It is deliberately biased
+  towards holding: a wrong hold costs one click, a wrong pass puts abuse on a
+  customer-facing page.
+- **The owner** can approve, edit the wording, hide, or permanently delete any
+  review — held or already live. Anything waiting shows as a red badge on the
+  dashboard.
+- **Writes never come from the browser.** There is no public `INSERT` policy;
+  reviews are inserted server-side with the service-role key, so the rate
+  limit, honeypot and filter cannot be bypassed by posting straight to
+  Supabase.
+- Product **structured data** is emitted only once a product has approved
+  reviews, and its `aggregateRating` is computed from exactly the reviews
+  rendered on the page — never invented numbers.
+
+---
+
 ## 🔍 SEO
 
-- Unique `<title>` + description per page, with local keywords (Neora,
-  Danapur, Bihta, Khagaul, Patna) in English and Hindi.
+- Unique `<title>` + description per page, led by **Danapur, Patna** (the way
+  customers actually search) with Neora, Khagaul, Bihta and Phulwari Sharif
+  alongside, in English and Hindi.
 - **LocalBusiness/HardwareStore** JSON-LD with exact geo-coordinates, map
   link, hours, and service area — the strongest signal for "near me" search
   and the Google Maps 3-pack.
 - Auto-generated `sitemap.xml` and `robots.txt` (admin + API routes excluded).
-- Per-product **Product** structured data; branded Open Graph image for
+  `lastmod` reports each product's real `updated_at` rather than the build
+  time — a sitemap whose dates are always "now" teaches Google to ignore them.
+- **Internal linking:** the footer links every product from every page, and
+  each product page links its siblings. Pages reachable from only one place
+  are the ones Google leaves in "Discovered – currently not indexed".
+- Per-product **Product** structured data (only with real reviews — see above);
+  **ItemList** on the catalogue page; branded Open Graph image for
   WhatsApp/social link previews.
 - Real favicon set (`.ico` + SVG + Apple touch icon) generated from the brand
   mark — no default framework logo in the browser tab.
