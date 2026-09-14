@@ -13,12 +13,25 @@ import { pageMetadata } from '@/lib/seo';
 export const revalidate = 300;
 
 export const metadata: Metadata = pageMetadata({
-  title: 'Kamakhya Traders — Building Materials in Danapur, Patna',
+  title: 'Building Material Shop in Danapur, Patna | Kamakhya Traders',
   description:
     'Building materials supplier in Danapur, Patna (Bihar – 801113) — at Neora, near Railway Gumti. Quality cement, iron rods (chhad), stone chips (gitti), sand (balu), bricks, bamboo & plywood at fair prices. Serving Danapur, Neora, Khagaul, Bihta, Phulwari Sharif & all of Patna. Call for today’s rate.',
   path: '/',
-  keywords: ['building materials in Patna Danapur', 'building material shop Danapur', 'cement shop Danapur Patna', 'sariya rate Danapur', 'gitti balu Danapur Patna', 'building material supplier near me Patna'],
+  keywords: ['building materials in Patna Danapur', 'building material shop Danapur', 'cement shop Danapur Patna', 'sariya rate Danapur', 'gitti balu Danapur Patna', 'building material supplier near me Patna', 'construction material price list Patna', 'ghar banane ka saman Patna'],
 });
+
+// Descriptive text links to every product page. The cards above only show the
+// first six products and link with the bare product name; these give each
+// page a link from the home page using the phrase people actually search.
+const localLinks: Record<string, string> = {
+  cement: 'Cement dealer in Danapur',
+  'iron-rods': 'Sariya (iron rod) dealer in Danapur',
+  'stone-chips': 'Gitti (stone chips) supplier in Patna',
+  sand: 'Balu (sand) supplier in Danapur',
+  bricks: 'Red bricks (eet) supplier in Patna',
+  bamboo: 'Bamboo for scaffolding & centering',
+  plywood: 'Plywood & shuttering ply dealer in Danapur',
+};
 
 const trustPoints = [
   { icon: 'diamond', title: 'Behtareen Quality', desc: 'Only well-sourced, reliable materials — from branded cement to strong iron rods.' },
@@ -78,6 +91,54 @@ export default async function HomePage() {
                 <ProductCard product={p} />
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Local shop intro + a link to every product page */}
+      <section className="bg-surface-bright py-16 md:py-24 border-t-2 border-surface-variant">
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-gutter lg:gap-12">
+          <div className="lg:col-span-7 space-y-5">
+            <h2 className="font-heading text-headline-lg-mobile md:text-headline-lg text-primary">
+              Your Building Material Shop in Danapur, Patna
+            </h2>
+            <p className="font-body text-body-lg text-on-surface-variant">
+              Kamakhya Traders is a building materials supplier at {siteConfig.address.line1},{' '}
+              {siteConfig.address.area}, {siteConfig.address.city}. Building a new house, adding a floor
+              or repairing a boundary wall, you can get the main construction materials from one shop:
+              cement, sariya (iron rods), gitti (stone chips), balu (sand), eet (bricks), baans (bamboo)
+              and plywood, by the bag, piece or tractor load.
+            </p>
+            <p className="font-body text-body-lg text-on-surface-variant">
+              Rates for cement, sariya, gitti and balu change often, so we don&apos;t print a price list
+              that goes out of date. Call {siteConfig.phones.primaryDisplay} or WhatsApp us for
+              today&apos;s rate on the exact quantity you need. We supply homeowners, masons and
+              contractors across {siteConfig.address.serviceArea.slice(0, -1).join(', ')} and{' '}
+              {siteConfig.address.serviceArea[siteConfig.address.serviceArea.length - 1]}.
+            </p>
+            <p className="font-body text-body-lg text-on-surface-variant" lang="hi">
+              दानापुर, पटना में घर बनाने का सारा सामान — सीमेंट, सरिया, गिट्टी, बालू, ईंट, बाँस और प्लाई — एक ही दुकान पर।
+            </p>
+          </div>
+          <div className="lg:col-span-5">
+            <h3 className="font-heading text-label-bold text-primary uppercase tracking-wider mb-4">
+              Materials we supply
+            </h3>
+            <ul className="divide-y divide-surface-variant border-y border-surface-variant">
+              {products.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    href={`/products/${p.slug}`}
+                    className="flex items-center justify-between gap-4 py-3.5 font-body text-body-lg text-primary hover:text-secondary transition-colors group"
+                  >
+                    {localLinks[p.slug] ?? `${p.name} in Danapur, Patna`}
+                    <span className="material-symbols-outlined text-secondary group-hover:translate-x-1 transition-transform" aria-hidden="true">
+                      east
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>

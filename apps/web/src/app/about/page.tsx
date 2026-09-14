@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { siteConfig } from '@/lib/site';
 import { getAboutSettings } from '@/lib/settings';
+import { getAllProducts } from '@/lib/products';
 import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -20,8 +22,21 @@ const values = [
   { icon: 'handshake', title: 'Aapki Santushti', desc: 'Your satisfaction is our identity. We have earned the trust of contractors, builders and homeowners across the area.' },
 ];
 
+// Longer than the card summaries, so this section isn't a copy of the catalogue.
+// Keyed by slug; the list itself comes from the live catalogue, so a product
+// deleted in the admin panel never leaves a dead link here.
+const aboutBlurbs: Record<string, string> = {
+  cement: 'PPC and OPC cement, including UltraTech, in 50 kg bags — for foundations, slabs, plaster and brickwork.',
+  'iron-rods': 'Iron rods (sariya / chhad) in the diameters used for rings, slabs, beams and columns, sold by the kg or tonne.',
+  'stone-chips': 'Clean, graded 10 mm and 20 mm crushed stone (gitti) for RCC and concrete work.',
+  sand: 'Low-silt fine balu for plaster and coarse balu for concrete and masonry.',
+  bricks: 'Well-fired red clay bricks (eet) for house walls, boundary walls and partitions, in bulk.',
+  bamboo: 'Straight, strong baans for scaffolding and slab centering support.',
+  plywood: 'Shuttering ply for site work and plywood (palai) for furniture, doors and interiors.',
+};
+
 export default async function AboutPage() {
-  const about = await getAboutSettings();
+  const [about, products] = await Promise.all([getAboutSettings(), getAllProducts()]);
 
   return (
     <>
@@ -124,6 +139,37 @@ export default async function AboutPage() {
                 <h3 className="font-heading text-headline-md text-primary mb-4">{v.title}</h3>
                 <p className="font-body text-body-md text-on-surface-variant">{v.desc}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What we supply — a plain-language rundown with a link to each page */}
+      <section className="bg-background py-14 md:py-24 border-t-2 border-surface-variant">
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+          <div className="max-w-3xl mb-10 space-y-4">
+            <h2 className="font-heading text-headline-lg-mobile md:text-headline-lg text-primary">
+              What We Supply
+            </h2>
+            <p className="font-body text-body-lg text-on-surface-variant">
+              Our customers are homeowners building their first house, masons and small contractors
+              handling several sites, and builders who need regular loads. Most of them need the same
+              core materials, so we keep them all at one shop in Danapur and help with advice on
+              quantity and type when you call.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+            {products.map((p) => (
+              <Link
+                key={p.id}
+                href={`/products/${p.slug}`}
+                className="block bg-surface-container-lowest border border-outline-variant p-6 rounded hover:border-secondary transition-colors group"
+              >
+                <h3 className="font-heading text-headline-md text-primary mb-2 group-hover:text-secondary transition-colors">
+                  {p.name}
+                </h3>
+                <p className="font-body text-body-md text-on-surface-variant">{aboutBlurbs[p.slug] ?? p.summary}</p>
+              </Link>
             ))}
           </div>
         </div>

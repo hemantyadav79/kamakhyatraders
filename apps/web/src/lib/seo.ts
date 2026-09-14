@@ -44,6 +44,9 @@ const baseKeywords = [
   // Neora / near railway gumti / neighbouring areas
   'building materials Neora Patna',
   'building materials near railway gumti Patna',
+  'building material shop Danapur Cantt',
+  'building material shop Danapur Bazar',
+  'building materials Saguna More',
   'building materials Khagaul',
   'building materials Bihta',
   'building materials Phulwari Sharif',
@@ -59,6 +62,11 @@ const baseKeywords = [
   'bricks supplier Danapur',
   'plywood dealer Danapur Patna',
   'bamboo supplier Patna',
+  // "Rate today" searches — high volume in Patna because prices move daily
+  'building material rate today Patna',
+  'construction material price list Patna',
+  'cement sariya rate today Patna',
+  'gitti balu rate Patna',
   // Hindi
   'निर्माण सामग्री दानापुर',
   'निर्माण सामग्री पटना',

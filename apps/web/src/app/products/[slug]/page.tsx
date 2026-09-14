@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { ProductGallery } from '@/components/ProductGallery';
 import { ProductReviews } from '@/components/ProductReviews';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductGuide } from '@/components/ProductGuide';
+import { getProductGuide } from '@/data/product-guides';
 import { getAllProducts, getProductBySlug } from '@/lib/products';
 import { getApprovedReviews, isProductId } from '@/lib/reviews';
 import { siteConfig } from '@/lib/site';
@@ -23,6 +25,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return pageMetadata({ title: 'Product not found', description: '', path: `/products/${slug}` });
+
+  const guide = getProductGuide(product.slug);
+  if (guide) {
+    return pageMetadata({
+      title: guide.title,
+      description: guide.metaDescription,
+      path: `/products/${product.slug}`,
+      keywords: guide.keywords,
+    });
+  }
 
   return pageMetadata({
     title: `${product.name} Dealer in Danapur & Patna — Price on Call`,
@@ -54,8 +66,14 @@ export default async function ProductDetailPage({ params }: Params) {
   // Sibling products, for visitors browsing around and for search engines:
   // without these, each product page was a dead end that only linked back up
   // to /products, which is part of why the deeper pages were slow to be indexed.
+  // The next three products after this one, wrapping around. Always taking
+  // the first three meant cement, iron rods and gitti were linked from every
+  // page while bricks, bamboo and plywood were linked from almost none.
   const allProducts = await getAllProducts();
-  const related = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
+  const others = allProducts.filter((p) => p.slug !== product.slug);
+  const start = Math.max(0, allProducts.findIndex((p) => p.slug === product.slug));
+  const related = [...others.slice(start), ...others.slice(0, start)].slice(0, 3);
+  const guide = getProductGuide(product.slug);
 
   // Google requires a Product to include at least one of `offers`, `review`,
   // or `aggregateRating` to be considered valid — this business has no fixed
@@ -138,11 +156,14 @@ export default async function ProductDetailPage({ params }: Params) {
               </p>
               <div className="flex items-baseline gap-3 mb-4">
                 <h1 className="font-heading text-headline-lg-mobile md:text-headline-lg text-primary">
-                  {product.name}
+                  {guide?.h1 ?? product.name}
                 </h1>
                 <span className="text-outline font-body text-headline-md" lang="hi">{product.nameHindi}</span>
               </div>
 
+              {guide && (
+                <p className="font-body text-body-lg text-on-surface mb-4">{guide.intro}</p>
+              )}
               <p className="font-body text-body-lg text-on-surface-variant mb-6">{product.description}</p>
 
               {/* Price + stock */}
@@ -191,6 +212,14 @@ export default async function ProductDetailPage({ params }: Params) {
               </div>
             </div>
           </div>
+
+          {guide && (
+            <ProductGuide
+              guide={guide}
+              productName={product.name}
+              otherProducts={others.map((p) => ({ name: p.name, slug: p.slug }))}
+            />
+          )}
 
           <ProductReviews
             reviews={reviews}

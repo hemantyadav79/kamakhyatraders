@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { ContactForm } from '@/components/ContactForm';
+import { getAllProducts } from '@/lib/products';
 import { siteConfig, mapEmbedUrl, mapDirectionsUrl, mapPlaceUrl } from '@/lib/site';
 import { pageMetadata, breadcrumbJsonLd } from '@/lib/seo';
 
@@ -11,7 +13,11 @@ export const metadata: Metadata = pageMetadata({
   keywords: ['contact Kamakhya Traders', 'building material shop Danapur contact', 'building materials shop address Danapur Patna', 'cement dealer phone number Patna', 'building materials near railway gumti Patna'],
 });
 
-export default function ContactPage() {
+export const revalidate = 300;
+
+export default async function ContactPage() {
+  const products = await getAllProducts();
+
   return (
     <>
       <script
@@ -183,6 +189,35 @@ export default function ContactPage() {
                 </li>
               ))}
             </ul>
+            {/* What to have ready — speeds up a quote, and a link to each material */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-10">
+              <div className="bg-surface-container-lowest border border-surface-variant rounded p-6">
+                <h3 className="font-heading text-label-bold text-primary uppercase tracking-wide mb-4">
+                  To get a quick rate, tell us
+                </h3>
+                <ul className="space-y-2.5 font-body text-body-md text-on-surface">
+                  <li>1. The material — and the size or grade if you know it (e.g. 12 mm sariya, 20 mm gitti, PPC cement).</li>
+                  <li>2. The quantity — bags, kg/tonne, CFT, pieces or number of tractor loads.</li>
+                  <li>3. Where your site is, so we can include delivery in the rate.</li>
+                  <li>4. When you need it on site.</li>
+                </ul>
+              </div>
+              <div className="bg-surface-container-lowest border border-surface-variant rounded p-6">
+                <h3 className="font-heading text-label-bold text-primary uppercase tracking-wide mb-4">
+                  Read about each material
+                </h3>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
+                  {products.map((p) => (
+                    <li key={p.id}>
+                      <Link href={`/products/${p.slug}`} className="font-body text-body-md text-secondary font-semibold hover:underline">
+                        {p.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
               <a
                 href={siteConfig.telPrimary}

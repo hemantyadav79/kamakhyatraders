@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllProducts } from '@/lib/products';
+import { GUIDES_UPDATED, getProductGuide } from '@/data/product-guides';
 import { siteConfig } from '@/lib/site';
 
 // -----------------------------------------------------------------------------
@@ -14,7 +15,10 @@ import { siteConfig } from '@/lib/site';
 // -----------------------------------------------------------------------------
 
 /** Bump this when the wording on /, /products, /about or /contact changes. */
-const STATIC_CONTENT_UPDATED = new Date('2026-09-01T00:00:00.000Z');
+const STATIC_CONTENT_UPDATED = new Date('2026-09-14T00:00:00.000Z');
+
+/** Product pages also change when their buying guide in data/product-guides.ts does. */
+const GUIDE_CONTENT_UPDATED = new Date(GUIDES_UPDATED);
 
 /** Keep in step with the `UPDATED` date shown on /privacy and /terms. */
 const LEGAL_UPDATED = new Date('2026-09-01T00:00:00.000Z');
@@ -75,12 +79,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const productPages: MetadataRoute.Sitemap = products.map((p) => ({
-    url: `${siteConfig.url}/products/${p.slug}`,
-    lastModified: toDate(p.updatedAt, STATIC_CONTENT_UPDATED),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
+  const productPages: MetadataRoute.Sitemap = products.map((p) => {
+    const rowChange = toDate(p.updatedAt, STATIC_CONTENT_UPDATED);
+    const guideChange = getProductGuide(p.slug) ? GUIDE_CONTENT_UPDATED : rowChange;
+    return {
+      url: `${siteConfig.url}/products/${p.slug}`,
+      lastModified: guideChange > rowChange ? guideChange : rowChange,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    };
+  });
 
   return [...staticPages, ...productPages];
 }
